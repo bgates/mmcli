@@ -13,9 +13,12 @@ class App
     # your program code here
     # You can access CLI options via
     # the options Hash
+    puts options
     if options[:a]
       File.open(manifest_file_path, "a") do |f|
-        f.puts options[:a]
+        options[:a].each do |path|
+          f.puts path
+        end
       end
     end
     if options[:l]
@@ -32,7 +35,15 @@ class App
   description "Manifest manager command line interface"
   #
   # Accept flags via:
-  on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern")
+options[:a] = options["a"] = options[:add] = options["add"] = []
+  on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern") do |s|
+    options[:a] << s
+    while (ARGV.length > 1 && ARGV[0][0] != "-")
+      options[:a] << ARGV.shift
+    end
+  end
+
+  #on("-a <glob>", "--add <glob>", "add file paths from the manifest for any file which matches the glob pattern")
   on("-d <glob>", "--delete <glob>", "Delete file paths from the manifest for any file which matches the glob pattern")
   on("-c", "--clean", "Clean up the manifest file by deleting paths for any non-existent files")
   on("-l", "--list", "List the contents of the manifest file")
