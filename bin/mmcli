@@ -13,11 +13,11 @@ class App
     # your program code here
     # You can access CLI options via
     # the options Hash
-    puts options
     if options[:a]
-      File.open(manifest_file_path, "a") do |f|
-        options[:a].each do |path|
-          f.puts path
+      File.open(manifest_file_path, "a+") do |f|
+        lines_sans_newlines = f.readlines.map(&:chomp)
+        options[:a].uniq.each do |path|
+          f.puts path unless lines_sans_newlines.include?(path)
         end
       end
     end

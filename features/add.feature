@@ -5,11 +5,18 @@ Feature: Adding to manifest file
 
   Scenario: Add single file to empty manifest
     Given an empty file named "manifest.txt"
+    And an empty file named "/path/to/add"
     When I successfully run "mmcli -a /path/to/add manifest.txt"
     Then the file "manifest.txt" should contain "/path/to/add"
 
-  Scenario: Add multiple files to empty manifest
-    Given an empty file named "manifest.txt"
+  Scenario: Add file and create manifest
+    Given an empty file named "/path/to/add"
+    When I successfully run "mmcli -a /path/to/add manifest.txt"
+    Then the file "manifest.txt" should contain "/path/to/add"
+
+  Scenario: Add multiple files to manifest
+    Given an empty file named "/path/to/one"
+    And an empty file named "/path/to/two"
     When I successfully run "mmcli -a /path/to/one /path/to/two manifest.txt"
     Then the file "manifest.txt" should contain:
     """
@@ -31,6 +38,57 @@ Feature: Adding to manifest file
     #/add_dir/two.txt
     #"""
 
+  Scenario: Append to existing manifest
+    Given a file named "manifest.txt" with:
+    """
+    /pre/existing/path
 
+    """
+    And an empty file named "/path/to/add"
+    When I successfully run "mmcli -a /path/to/add manifest.txt"
+    Then the file "manifest.txt" should contain:
+    """
+    /pre/existing/path
+    /path/to/add
+    """
 
+  Scenario: Prevent duplicates in manifest
+    Given a file named "manifest.txt" with:
+    """
+    /pre/existing/path
+
+    """
+    And an empty file named "/path/to/add"
+    And an empty file named "/pre/existing/path"
+    When I successfully run "mmcli -a /path/to/add /pre/existing/path manifest.txt"
+    Then the file "manifest.txt" should contain:
+    """
+    /pre/existing/path
+    /path/to/add
+    """
+    And the file "manifest.txt" should not contain:
+    """
+    /path/to/add
+    /pre/existing/path
+    """
+
+  Scenario: Ignore duplicates in arguments to add
+    Given a file named "manifest.txt" with:
+    """
+    /pre/existing/path
+
+    """
+    And an empty file named "/path/to/add"
+    And an empty file named "/pre/existing/path"
+    When I successfully run "mmcli -a /path/to/add /path/to/add /pre/existing/path manifest.txt"
+    Then the file "manifest.txt" should contain:
+    """
+    /pre/existing/path
+    /path/to/add
+    """
+    And the file "manifest.txt" should not contain:
+    """
+    /path/to/add
+    /path/to/add
+    """
 
