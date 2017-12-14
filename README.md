@@ -20,7 +20,7 @@ This is a command line tool used to generate a manifest file, created as a codin
 
 **-d <glob>** deletes file paths from the manifest for any file which matches the glob pattern
 
-**-c** cleans up the manifest file by removing paths for any non-existent files
+**-c** cleans up the manifest file by deleting paths for any non-existent files
 
 **-h** displays help
 

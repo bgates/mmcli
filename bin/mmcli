@@ -21,7 +21,10 @@ class App
   description "Manifest manager command line interface"
   #
   # Accept flags via:
-  # on("--flag VAL","Some flag")
+  on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern")
+  on("-d <glob>", "--delete <glob>", "Delete file paths from the manifest for any file which matches the glob pattern")
+  on("-c", "--clean", "Clean up the manifest file by deleting paths for any non-existent files")
+  on("-l", "--list", "List the contents of the manifest file")
   # options[flag] will contain VAL
   #
   # Specify switches via:
@@ -30,7 +33,7 @@ class App
   # Or, just call OptionParser methods on opts
   #
   # Require an argument
-  # arg :some_arg 
+  arg :"manifest-file-path", "path to the manifest file"
   #
   # # Make an argument optional
   # arg :optional_arg, :optional
