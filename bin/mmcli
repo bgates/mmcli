@@ -13,6 +13,11 @@ class App
     # your program code here
     # You can access CLI options via
     # the options Hash
+    if options[:a]
+      File.open(manifest_file_path, "a") do |f|
+        f.puts options[:a]
+      end
+    end
     if options[:l]
       File.open(manifest_file_path, "r") do |f|
         f.each_line { |line| puts line }
