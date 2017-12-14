@@ -17,3 +17,4 @@ Feature: My bootstrapped app kinda works
       |--help   |
     And the banner should document that this app's arguments are:
       |manifest-file-path| which is required |
+
