@@ -27,7 +27,7 @@ class App
   end
 
   def self.space_separated_options?
-    ARGV.length > 1 && ARGV[0][0] != '-'
+    ARGV.length > 0 && ARGV[0][0] != '-'
   end
 
   # Declare command-line interface here

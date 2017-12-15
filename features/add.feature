@@ -11,7 +11,7 @@ Feature: Adding to manifest file
     """
     content
     """
-    When I successfully run "mmcli -a /add manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /add"
     Then the file "manifest.txt" should contain "/add"
 
   Scenario: Add file and create manifest
@@ -19,7 +19,7 @@ Feature: Adding to manifest file
     """
     content
     """
-    When I successfully run "mmcli -a /path/to/add manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /path/to/add"
     Then the file "manifest.txt" should contain "/path/to/add"
 
   Scenario: Add multiple files to manifest
@@ -31,7 +31,7 @@ Feature: Adding to manifest file
     """
     content
     """
-    When I successfully run "mmcli -a /path/to/one /path/to/two manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /path/to/one /path/to/two"
     Then the file "manifest.txt" should contain:
     """
     /path/to/one
@@ -59,7 +59,7 @@ Feature: Adding to manifest file
 
     """
     And an empty file named "/path/to/add"
-    When I successfully run "mmcli -a /path/to/add manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /path/to/add"
     Then the file "manifest.txt" should contain:
     """
     /pre/existing/path
@@ -74,7 +74,7 @@ Feature: Adding to manifest file
     """
     And an empty file named "/path/to/add"
     And an empty file named "/pre/existing/path"
-    When I successfully run "mmcli -a /path/to/add /pre/existing/path manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /path/to/add /pre/existing/path"
     Then the file "manifest.txt" should contain:
     """
     /pre/existing/path
@@ -94,7 +94,7 @@ Feature: Adding to manifest file
     """
     And an empty file named "/path/to/add"
     And an empty file named "/pre/existing/path"
-    When I successfully run "mmcli -a /path/to/add /path/to/add /pre/existing/path manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /path/to/add /path/to/add /pre/existing/path"
     Then the file "manifest.txt" should contain:
     """
     /pre/existing/path
@@ -108,6 +108,6 @@ Feature: Adding to manifest file
 
   Scenario: Prevent addition of nonexistent files
     Given an empty file named "/existent"
-    When I successfully run "mmcli -a /existent /nonexistent manifest.txt"
+    When I successfully run "mmcli manifest.txt -a /existent /nonexistent"
     Then the file "manifest.txt" should contain "/existent"
     And the file "manifest.txt" should not contain "/nonexistent"

@@ -10,7 +10,7 @@ Feature: Deleting from manifest file
     /not/needed
     /another/keeper
     """
-    When I successfully run "mmcli -d /not/needed manifest.txt"
+    When I successfully run "mmcli manifest.txt -d /not/needed"
     Then the file "manifest.txt" should contain:
     """
     /a/keeper
@@ -30,7 +30,7 @@ Feature: Deleting from manifest file
     /toss/please
     /nice
     """
-    When I successfully run "mmcli -d /toss/this /toss/please manifest.txt"
+    When I successfully run "mmcli manifest.txt -d /toss/this /toss/please"
     Then the file "manifest.txt" should contain:
     """
     /a/keeper
@@ -47,7 +47,7 @@ Feature: Deleting from manifest file
     /toss/please
     /nice
     """
-    When I successfully run "mmcli -d /toss/* manifest.txt"
+    When I successfully run "mmcli manifest.txt -d /toss/*"
     Then the file "manifest.txt" should contain:
     """
     /a/keeper
