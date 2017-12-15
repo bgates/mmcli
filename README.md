@@ -4,7 +4,11 @@ This is a command line tool used to generate a manifest file, created as a codin
 
 ## Installation
 
-`gem install mmcli`
+```
+git clone https://github.com/bgates/mmcli.git
+cd mmcli && gem build mmcli
+gem install mmcli
+```
 
 ## Usage
 
@@ -16,15 +20,19 @@ This is a command line tool used to generate a manifest file, created as a codin
 
 ### Options
 
-**-a <glob>** adds file paths to the manifest for any file which matches the glob pattern
+**-a, --add <glob>i** adds file paths to the manifest for any file which matches the glob pattern
 
-**-d <glob>** deletes file paths from the manifest for any file which matches the glob pattern
+**-d, --delete <glob>** deletes file paths from the manifest for any file which matches the glob pattern
 
-**-c** cleans up the manifest file by deleting paths for any non-existent files
+**-c, --clean** cleans up the manifest file by deleting paths for any non-existent files
 
-**-h** displays help
+**-h, --help** displays help
 
-**-l** list the contents of the manifest file
+**-l, --list** list the contents of the manifest file
+
+## Testing
+
+`rake`
 
 ## Contributing
 

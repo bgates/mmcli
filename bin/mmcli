@@ -5,76 +5,94 @@ require 'methadone'
 require 'mmcli.rb'
 require 'fileutils'
 
-
 class App
   include Methadone::Main
   include Methadone::CLILogging
   include Methadone::SH
   
-  prefix = File.join(File.expand_path(__dir__), '..', 'tmp', 'aruba') if ENV['ARUBA_HACK']  
+  PREFIX = File.join(File.expand_path(__dir__), '..', 'tmp', 'aruba') if ENV['ARUBA_HACK']  
+
   main do |manifest_file_path|
-    if options[:d].any?
-      File.open(manifest_file_path, "r") do |f|
-        File.open("#{manifest_file_path}.tmp", 'w') do |f2|
-          f.each_line do |line|
-            f2.write(line) unless options[:d].include?(line.chomp)
-          end
-        end
-      end
-      FileUtils.mv "#{manifest_file_path}.tmp", manifest_file_path
-    end
+    delete!(manifest_file_path, options[:delete]){|line, list| list.include?(line.chomp)} if options[:delete].any?
 
-    if options[:c]
-      File.open(manifest_file_path, "r") do |f|
-        File.open("#{manifest_file_path}.tmp", 'w') do |f2|
-          f.each_line do |line|
-            hack_path = prefix ? "#{prefix}#{line.chomp}" : File.absolute_path(line.chomp)
-            f2.write(line) if File.exist?(hack_path)
-          end
-        end
-      end
-      FileUtils.mv "#{manifest_file_path}.tmp", manifest_file_path
-    end
+    clean!(manifest_file_path) if options[:clean]
 
-    if options[:a].any?
-      File.open(manifest_file_path, "a+") do |f|
-        lines_sans_newlines = f.readlines.map(&:chomp)
-        options[:a].uniq.each do |path|
-          hack_path = prefix ? path.sub(prefix, '') : File.absolute_path(path)
-          f.puts hack_path if File.exist?(path) && !lines_sans_newlines.include?(hack_path)
+    add!(manifest_file_path, options[:add]) if options[:add].any?
+
+    list_contents(manifest_file_path) if options[:list]
+  end
+
+  def self.add!(file_path, list)
+    info "adding files..."
+    failures = []
+    File.open(file_path, "a+") do |f|
+      lines_sans_newlines = f.readlines.map(&:chomp)
+      list.uniq.each do |path|
+        hack_path = PREFIX ? path.sub(PREFIX, '') : File.absolute_path(path)
+        if File.exist?(path)
+          f.puts hack_path if !lines_sans_newlines.include?(hack_path)
+        else
+          failures << path
         end
       end
     end
-
-    if options[:l]
-      File.open(manifest_file_path, "r") do |f|
-        f.each_line { |line| puts line }
-      end
+    if failures.empty?
+      info "all files added"
+    else
+      info "the following paths were not added because no such files exist: #{failures.join(', ')}"
     end
   end
 
-  # supplemental methods here
+  def self.clean!(file_path)
+    info "cleaning manifest..."
+    delete!(file_path, nil) do |line|
+      hack_path = PREFIX ? "#{PREFIX}#{line.chomp}" : File.absolute_path(line.chomp)
+      !File.exist?(hack_path)
+    end
+    info "manifest clean"
+  end
+
+  def self.delete!(file_path, list, &block)
+    info "deleting files..." if list #so cleaning doesn't generate this msg
+    File.open(file_path, "r") do |f|
+      File.open("#{file_path}.tmp", 'w') do |f2|
+        f.each_line do |line|
+          f2.write(line) unless yield(line, list)
+        end
+      end
+    end
+    FileUtils.mv "#{file_path}.tmp", file_path
+    info "files deleted"
+  end
+
+  def self.list_contents(file_path)
+    File.open(file_path, "r") do |f|
+      f.each_line { |line| puts line }
+    end
+  end
+
+  def self.space_separated_options?
+    ARGV.length > 1 && ARGV[0][0] != "-"
+  end
 
   # Declare command-line interface here
 
   description "Manifest manager command line interface"
   #
   # Accept flags via:
-  options[:a] = []
-  ["a", "add", :add].each{|opt| options[opt] = options[:a]}
-  options[:d] = []
-  ["d", "delete", :delete].each{|opt| options[opt] = options[:d]}
+  options[:add] = []
+  options[:delete] = []
   on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern") do |s|
-    options[:a] << "#{prefix}#{s}"
-    while (ARGV.length > 1 && ARGV[0][0] != "-")
-      options[:a] << "#{prefix}#{ARGV.shift}"
+    options[:add] << "#{PREFIX}#{s}"
+    while space_separated_options?
+      options[:add] << "#{PREFIX}#{ARGV.shift}"
     end
   end
 
   on("-d <glob>", "--delete <glob>", "Delete file paths from the manifest for any file which matches the glob pattern") do |s|
-    options[:d] << s
-    while (ARGV.length > 1 && ARGV[0][0] != "-")
-      options[:d] << ARGV.shift
+    options[:delete] << s
+    while space_separated_options?
+      options[:delete] << ARGV.shift
     end
   end
   on("-c", "--clean", "Clean up the manifest file by deleting paths for any non-existent files")
@@ -88,9 +106,6 @@ class App
   #
   # Require an argument
   arg :"manifest-file-path", "path to the manifest file"
-  #
-  # # Make an argument optional
-  # arg :optional_arg, :optional
 
   version Mmcli::VERSION
 
