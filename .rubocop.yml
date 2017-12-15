@@ -1,0 +1,5 @@
+Metrics/LineLength:
+  IgnoredPatterns: ['the manifest', 'ENV', 'the following']
+
+AllCops:
+  TargetRubyVersion: 2.4
