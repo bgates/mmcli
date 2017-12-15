@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     mmcli (0.1.0)
+      gem-man
       methadone (~> 1.9.5)
 
 GEM
@@ -37,14 +38,22 @@ GEM
     cucumber-wire (0.0.1)
     diff-lcs (1.3)
     ffi (1.9.18)
+    gem-man (0.3.0)
     gherkin (5.0.0)
+    hpricot (0.8.6)
     methadone (1.9.5)
       bundler
     multi_json (1.12.2)
     multi_test (0.1.2)
+    mustache (1.0.5)
     power_assert (1.1.1)
     rake (10.5.0)
+    rdiscount (2.2.0.1)
     rdoc (6.0.0)
+    ronn (0.7.3)
+      hpricot (>= 0.8.2)
+      mustache (>= 0.7.0)
+      rdiscount (>= 1.5.8)
     rspec-expectations (3.7.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
@@ -62,6 +71,7 @@ DEPENDENCIES
   mmcli!
   rake (~> 10.0)
   rdoc
+  ronn
   test-unit
 
 BUNDLED WITH
