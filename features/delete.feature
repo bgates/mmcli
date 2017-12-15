@@ -21,4 +21,20 @@ Feature: Deleting from manifest file
     /not/needed
     """
 
+  Scenario: Delete multiple files from manifest
+    Given a file named "manifest.txt" with:
+    """
+    /a/keeper
+    /toss/this
+    /useful
+    /toss/please
+    /nice
+    """
+    When I successfully run "mmcli -d /toss/this /toss/please manifest.txt"
+    Then the file "manifest.txt" should contain:
+    """
+    /a/keeper
+    /useful
+    /nice
+    """
 
