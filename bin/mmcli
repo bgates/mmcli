@@ -23,6 +23,19 @@ class App
       end
       FileUtils.mv "#{manifest_file_path}.tmp", manifest_file_path
     end
+
+    if options[:c]
+      File.open(manifest_file_path, "r") do |f|
+        File.open("#{manifest_file_path}.tmp", 'w') do |f2|
+          f.each_line do |line|
+            hack_path = prefix ? "#{prefix}#{line.chomp}" : File.absolute_path(line.chomp)
+            f2.write(line) if File.exist?(hack_path)
+          end
+        end
+      end
+      FileUtils.mv "#{manifest_file_path}.tmp", manifest_file_path
+    end
+
     if options[:a].any?
       File.open(manifest_file_path, "a+") do |f|
         lines_sans_newlines = f.readlines.map(&:chomp)
@@ -32,6 +45,7 @@ class App
         end
       end
     end
+
     if options[:l]
       File.open(manifest_file_path, "r") do |f|
         f.each_line { |line| puts line }
