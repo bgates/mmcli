@@ -3,6 +3,7 @@
 require 'optparse'
 require 'methadone'
 require 'mmcli.rb'
+require 'fileutils'
 
 
 class App
@@ -10,12 +11,19 @@ class App
   include Methadone::CLILogging
   include Methadone::SH
   
-  prefix = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'tmp', 'aruba') if ENV['ARUBA_HACK']  
+  prefix = File.join(File.expand_path(__dir__), '..', 'tmp', 'aruba') if ENV['ARUBA_HACK']  
   main do |manifest_file_path|
-    # your program code here
-    # You can access CLI options via
-    # the options Hash
-    if options[:a]
+    if options[:d].any?
+      File.open(manifest_file_path, "r") do |f|
+        File.open("#{manifest_file_path}.tmp", 'w') do |f2|
+          f.each_line do |line|
+            f2.write(line) unless options[:d].include?(line.chomp)
+          end
+        end
+      end
+      FileUtils.mv "#{manifest_file_path}.tmp", manifest_file_path
+    end
+    if options[:a].any?
       File.open(manifest_file_path, "a+") do |f|
         lines_sans_newlines = f.readlines.map(&:chomp)
         options[:a].uniq.each do |path|
@@ -38,7 +46,10 @@ class App
   description "Manifest manager command line interface"
   #
   # Accept flags via:
-options[:a] = options["a"] = options[:add] = options["add"] = []
+  options[:a] = []
+  ["a", "add", :add].each{|opt| options[opt] = options[:a]}
+  options[:d] = []
+  ["d", "delete", :delete].each{|opt| options[opt] = options[:d]}
   on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern") do |s|
     options[:a] << "#{prefix}#{s}"
     while (ARGV.length > 1 && ARGV[0][0] != "-")
@@ -46,8 +57,12 @@ options[:a] = options["a"] = options[:add] = options["add"] = []
     end
   end
 
-  #on("-a <glob>", "--add <glob>", "add file paths from the manifest for any file which matches the glob pattern")
-  on("-d <glob>", "--delete <glob>", "Delete file paths from the manifest for any file which matches the glob pattern")
+  on("-d <glob>", "--delete <glob>", "Delete file paths from the manifest for any file which matches the glob pattern") do |s|
+    options[:d] << s
+    while (ARGV.length > 1 && ARGV[0][0] != "-")
+      options[:d] << ARGV.shift
+    end
+  end
   on("-c", "--clean", "Clean up the manifest file by deleting paths for any non-existent files")
   on("-l", "--list", "List the contents of the manifest file")
   # options[flag] will contain VAL
