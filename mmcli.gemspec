@@ -31,7 +31,7 @@ Gem::Specification.new do |spec|
   end
 
   spec.add_dependency 'gem-man', '~> 0'
-  spec.add_dependency('methadone', '~> 1.9.5')
+  spec.add_dependency('methadone', '~> 1.9', '>= 1.9.5')
   spec.add_development_dependency 'aruba', '~> 0'
   spec.add_development_dependency 'bundler', '~> 1.13'
   spec.add_development_dependency 'rake', '~> 10.0'

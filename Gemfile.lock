@@ -3,7 +3,7 @@ PATH
   specs:
     mmcli (0.1.0)
       gem-man (~> 0)
-      methadone (~> 1.9.5)
+      methadone (~> 1.9, >= 1.9.5)
 
 GEM
   remote: https://rubygems.org/
