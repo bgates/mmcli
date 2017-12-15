@@ -14,9 +14,9 @@ module Mmcli
     def self.add!(file_path, list)
       info 'adding files...'
       File.open(file_path, 'a+') do |f|
-        lines_sans_newlines = f.readlines.map(&:chomp)
+        chomped_lines = f.readlines.map(&:chomp)
         failures = list.uniq.each_with_object([]) do |path, array|
-          write_or_save_for_report(f, path, lines_sans_newlines, array)
+          write_or_save_for_report(f, path, chomped_lines, array)
         end
         report(failures)
       end
@@ -63,9 +63,9 @@ module Mmcli
       end
     end
 
-    def self.write_or_save_for_report(f, path, lines_sans_newlines, array)
+    def self.write_or_save_for_report(f, path, chomped_lines, array)
       if File.exist?(path)
-        f.puts hack_for(path) unless lines_sans_newlines.include?(hack_for(path))
+        f.puts hack_for(path) unless chomped_lines.include?(hack_for(path))
       else
         array << path
       end

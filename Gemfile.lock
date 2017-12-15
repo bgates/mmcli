@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     mmcli (0.1.0)
-      gem-man
+      gem-man (~> 0)
       methadone (~> 1.9.5)
 
 GEM
@@ -66,13 +66,13 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  aruba
+  aruba (~> 0)
   bundler (~> 1.13)
   mmcli!
   rake (~> 10.0)
-  rdoc
-  ronn
-  test-unit
+  rdoc (~> 6)
+  ronn (~> 0)
+  test-unit (~> 3)
 
 BUNDLED WITH
    1.13.7
