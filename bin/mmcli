@@ -15,7 +15,7 @@ class App
   main do |manifest_file_path|
     if options[:delete].any?
       Manifest.delete!(manifest_file_path, options[:delete]) do |line, list|
-        list.include?(line.chomp)
+        list.any?{|pattern| line.chomp =~ Regexp.new("#{pattern.sub('*', '.*')}$")}
       end
     end
 

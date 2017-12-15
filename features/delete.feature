@@ -38,3 +38,19 @@ Feature: Deleting from manifest file
     /nice
     """
 
+  Scenario: Delete multiple files from manifest with glob
+    Given a file named "manifest.txt" with:
+    """
+    /a/keeper
+    /toss/this
+    /useful
+    /toss/please
+    /nice
+    """
+    When I successfully run "mmcli -d /toss/* manifest.txt"
+    Then the file "manifest.txt" should contain:
+    """
+    /a/keeper
+    /useful
+    /nice
+    """
