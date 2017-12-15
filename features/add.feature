@@ -3,6 +3,8 @@ Feature: Adding to manifest file
   I want to add file paths to the manifest
   So I know what exists in my project
 
+  # aruba complains that the use of quotes in the 'successfully run' steps
+  # is deprecated, but replacing them with backticks blows up
   Scenario: Add single file to empty manifest
     Given an empty file named "manifest.txt"
     And a file named "/add" with: 
