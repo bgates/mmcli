@@ -9,8 +9,10 @@ Before do
   @puts = true
   @original_rubylib = ENV['RUBYLIB']
   ENV['RUBYLIB'] = LIB_DIR + File::PATH_SEPARATOR + ENV['RUBYLIB'].to_s
+  ENV['ARUBA_HACK'] = 'true'
 end
 
 After do
   ENV['RUBYLIB'] = @original_rubylib
+  ENV['ARUBA_HACK'] = nil
 end

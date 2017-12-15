@@ -5,18 +5,30 @@ Feature: Adding to manifest file
 
   Scenario: Add single file to empty manifest
     Given an empty file named "manifest.txt"
-    And an empty file named "/path/to/add"
-    When I successfully run "mmcli -a /path/to/add manifest.txt"
-    Then the file "manifest.txt" should contain "/path/to/add"
+    And a file named "/add" with: 
+    """
+    content
+    """
+    When I successfully run "mmcli -a /add manifest.txt"
+    Then the file "manifest.txt" should contain "/add"
 
   Scenario: Add file and create manifest
-    Given an empty file named "/path/to/add"
+    Given a file named "/path/to/add" with:
+    """
+    content
+    """
     When I successfully run "mmcli -a /path/to/add manifest.txt"
     Then the file "manifest.txt" should contain "/path/to/add"
 
   Scenario: Add multiple files to manifest
-    Given an empty file named "/path/to/one"
-    And an empty file named "/path/to/two"
+    Given a file named "/path/to/one" with:
+    """
+    content
+    """
+    And a file named "/path/to/two" with:
+    """
+    content
+    """
     When I successfully run "mmcli -a /path/to/one /path/to/two manifest.txt"
     Then the file "manifest.txt" should contain:
     """
@@ -92,3 +104,8 @@ Feature: Adding to manifest file
     /path/to/add
     """
 
+  Scenario: Prevent addition of nonexistent files
+    Given an empty file named "/existent"
+    When I successfully run "mmcli -a /existent /nonexistent manifest.txt"
+    Then the file "manifest.txt" should contain "/existent"
+    And the file "manifest.txt" should not contain "/nonexistent"

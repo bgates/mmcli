@@ -4,11 +4,13 @@ require 'optparse'
 require 'methadone'
 require 'mmcli.rb'
 
+
 class App
   include Methadone::Main
   include Methadone::CLILogging
   include Methadone::SH
-
+  
+  prefix = File.join(File.expand_path(File.dirname(__FILE__)), '..', 'tmp', 'aruba') if ENV['ARUBA_HACK']  
   main do |manifest_file_path|
     # your program code here
     # You can access CLI options via
@@ -17,7 +19,8 @@ class App
       File.open(manifest_file_path, "a+") do |f|
         lines_sans_newlines = f.readlines.map(&:chomp)
         options[:a].uniq.each do |path|
-          f.puts path unless lines_sans_newlines.include?(path)
+          hack_path = prefix ? path.sub(prefix, '') : File.absolute_path(path)
+          f.puts hack_path if File.exist?(path) && !lines_sans_newlines.include?(hack_path)
         end
       end
     end
@@ -37,9 +40,9 @@ class App
   # Accept flags via:
 options[:a] = options["a"] = options[:add] = options["add"] = []
   on("-a <glob>", "--add <glob>", "Add file paths to the manifest for any file which matches the glob pattern") do |s|
-    options[:a] << s
+    options[:a] << "#{prefix}#{s}"
     while (ARGV.length > 1 && ARGV[0][0] != "-")
-      options[:a] << ARGV.shift
+      options[:a] << "#{prefix}#{ARGV.shift}"
     end
   end
 
